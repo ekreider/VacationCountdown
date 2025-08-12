@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vacation Countdown</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/quartz/bootstrap.min.css">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js"></script>
+
+</head>
+
+<body class="d-flex justify-content-center align-items-center vh-100 bg-primary">
+
+    <div class="card bg-secondary">
+        <div class="card-header text-center display-4">Time Until Vacation</div>
+        <div class="card-body">
+            <div id="commentDiv" class="fst-italic text-center">Thinking...</div>
+            <div id="timeDiv" class="text-center display-1">10:23:49:01</div>
+        </div>
+        <div class="card-footer">
+            <div class="progress" role="progressbar">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressDiv"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const timeDiv = document.getElementById("timeDiv");
+    const commentDiv = document.getElementById("commentDiv");
+    const progressDiv = document.getElementById("progressDiv");
+    const phrases = [
+        "I've heard Europe is nice this time of year.",
+        "Any day now...",
+        "Still a while to go.",
+        "I wonder what the weather is like in Barcelona.",
+        "I feel a siesta coming on...",
+        "I'm tired of working!",
+        "Where did I leave my passport..?",
+        "Is ten pairs of underwear enough? Nah, 11.",
+        "Que Sera, Sera.",
+        "Adventure awaits!",
+        "I haven't been everywhere, but it's on my list."
+    ]
+
+    var randomNumber = Math.floor(Math.random() * phrases.length);
+    commentDiv.innerHTML = phrases[randomNumber];
+
+    const startDatetime = luxon.DateTime.fromObject({
+        year: 2025,
+        month: 8,
+        day: 10,
+        hour: 0,
+        minute: 0
+    },
+        { zone: "America/New_York" });
+
+    const endDatetime = luxon.DateTime.fromObject({
+        year: 2025,
+        month: 10,
+        day: 5,
+        hour: 9,
+        minute: 30
+    },
+        { zone: "utc" });
+
+    function DifferenceUpdate() {
+        const now = luxon.DateTime.now();
+        const diff = endDatetime.diff(now, ["days", "hours", "minutes", "seconds"]).toObject();
+        diff.seconds = Math.floor(diff.seconds);
+
+        const total = endDatetime.toMillis() - startDatetime.toMillis();
+        const elapsed = now.toMillis() - startDatetime.toMillis();
+        const percentElapsed = Math.round(Math.min(100, Math.max(0, (elapsed / total) * 100)));
+
+        timeDiv.innerHTML = `${String(diff.days).padStart(2, '0')}:${String(diff.hours).padStart(2, '0')}:${String(diff.minutes).padStart(2, '0')}:${String(diff.seconds).padStart(2, '0')}`;
+        progressDiv.style.width = `${percentElapsed}%`;
+    }
+
+    DifferenceUpdate();
+    setInterval(DifferenceUpdate, 1000);
+</script>
+
+</html>
